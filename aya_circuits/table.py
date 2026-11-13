@@ -155,7 +155,7 @@ def main() -> None:
             ]
             lines.append(f"| {task} | {seed} | " + " | ".join(fmt(x) for x in cols_auc) + " |")
     cs_rows = []
-    span_p = ROOT / "checks" / "metric_span.json"
+    span_p = ROOT / "checks" / "results" / "metric_span.json"
     span = json.loads(span_p.read_text()) if span_p.exists() else {}
     for cj in sorted(root.glob("*/seed*/cellset.json")):
         c = json.loads(cj.read_text())
@@ -170,8 +170,8 @@ def main() -> None:
             return sum(x[k] for x in xs) / len(xs)
 
         # zero-referenced ratio r' = (r − r0)/(1 − r0) = m/clean, with r0 = −c/(clean − c) the
-        # ratio of a model whose metric is driven to 0 (checks/metric_span.json); 1 = intact,
-        # 0 = destroyed
+        # ratio of a model whose metric is driven to 0 (checks/results/metric_span.json);
+        # 1 = intact, 0 = destroyed
         r0 = span.get(c["task"], {}).get("ratio_at_zero_metric")
 
         def zero_ref(r, r0=r0):
@@ -221,7 +221,8 @@ def main() -> None:
             "random "
             "control under mean "
             "and zero replacement. `r0` = the ratio of a model whose metric is driven to 0 "
-            "(−corrupt/(clean − corrupt), measured in `checks/metric_span.json`); `nec0_*` = the "
+            "(−corrupt/(clean − corrupt), measured in `checks/results/metric_span.json`); "
+            "`nec0_*` = the "
             "mean-replacement necessity re-referenced to it, (r − r0)/(1 − r0) = metric/clean: "
             "1 = the set did not matter, 0 = the behaviour is gone, < 0 = inverted.\n",
             "| task | seed | heads+mlps | jaccard | coverage cell | coverage pillar | patching | "
